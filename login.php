@@ -1,18 +1,9 @@
 <?php
 session_start();
 
-$servername = "127.0.0.1";
-$dbusername = "root";
-$dbpassword = "";
-$dbname = "wecare";
-
 if (isset($_POST['username']) && isset($_POST['password'])) {
-    try {
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $dbusername, $dbpassword);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-        die("Connection failed: " . $e->getMessage());
-    }
+    // Include the database connection file
+    require_once 'dbconnect.php';
 
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -50,7 +41,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
     body {
-        background-color: #f4f4f9;
+        background: url('background.png') no-repeat center center fixed;
+        background-size: cover;
         margin: 0;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         display: flex;
@@ -60,15 +52,42 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         padding: 20px;
     }
 
-    .form-container {
-        border: 1px solid #e0e0e0;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background-color: #ffffff;
-        max-width: 400px;
+    .split-screen {
+        display: flex;
+        max-width: 900px;
         width: 100%;
-        margin: 20px auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        /* Slightly transparent white */
+    }
+
+    .split-screen .left,
+    .split-screen .right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px;
+    }
+
+    .split-screen .left {
+        background: url('wecare1.png') no-repeat center center;
+        background-size: cover;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .split-screen .right {
+        flex-direction: column;
+        justify-content: center;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .right .form-container {
+        width: 100%;
+        max-width: 400px;
     }
 
     .form-container h1 {
@@ -97,7 +116,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
     .password-container .field-icon {
         position: absolute;
-        top: 50%;
+        top: 40%;
         right: 10px;
         transform: translateY(-50%);
         cursor: pointer;
@@ -136,94 +155,50 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         color: #0056b3;
     }
 
-    .carousel-container {
-        max-width: 600px;
-        width: 100%;
-        margin: 0 auto 30px;
-    }
-
-    .carousel-inner img {
-        width: 100%;
-        height: auto;
-        margin: auto;
-        border-radius: 10px;
-    }
-
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 50%;
-    }
-
     @media (max-width: 768px) {
-        body {
-            padding: 10px;
+        .split-screen {
+            flex-direction: column;
+            border-radius: 10px;
         }
 
-        .form-container h1 {
-            font-size: 1.8em;
+        .split-screen .left {
+            height: 200px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
         }
 
-        .form-container {
-            padding: 20px;
-        }
-
-        .login-btn {
-            padding: 10px 15px;
+        .split-screen .right {
+            padding: 50px;
         }
     }
 
     @media (max-width: 576px) {
-        .carousel-inner img {
-            width: 100%;
-            height: auto;
+        .split-screen .right {
+            padding: 30px;
         }
     }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="carousel-container">
-            <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                <ol class="carousel-indicators">
-                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                    <li data-target="#myCarousel" data-slide-to="1"></li>
-                    <li data-target="#myCarousel" data-slide-to="2"></li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="wecare1.png" alt="Image1">
+    <div class="split-screen">
+        <div class="left"></div>
+        <div class="right">
+            <div class="form-container">
+                <h1>WeCare Clinic</h1>
+                <form id="loginForm" action="login.php" method="POST">
+                    <input type="text" name="username" placeholder="Username" required autocomplete="username">
+                    <div class="password-container">
+                        <input type="password" name="password" placeholder="Password" required
+                            autocomplete="current-password">
+                        <i class="fas fa-eye field-icon" id="togglePassword"></i>
                     </div>
-                    <div class="carousel-item">
-                        <img src="wecare.png" alt="Image2">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="wecare2.png" alt="Image3">
-                    </div>
-                </div>
-                <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                </a>
-                <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
+                    <button type="submit" class="login-btn">Login</button>
+                    <a href="register.php" class="register-link">Register</a>
+                </form>
             </div>
-        </div>
-        <div class="form-container">
-            <h1>WeCare Clinic</h1>
-            <form id="loginForm" action="login.php" method="POST">
-                <input type="text" name="username" placeholder="Username" required autocomplete="username">
-                <div class="password-container">
-                    <input type="password" name="password" placeholder="Password" required
-                        autocomplete="current-password">
-                    <i class="fas fa-eye field-icon" id="togglePassword"></i>
-                </div>
-                <button type="submit" class="login-btn">Login</button>
-                <a href="register.php" class="register-link">Register</a>
-            </form>
         </div>
     </div>
     <script>
