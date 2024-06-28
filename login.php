@@ -2,7 +2,6 @@
 session_start();
 
 if (isset($_POST['username']) && isset($_POST['password'])) {
-    // Include the database connection file
     require_once 'dbconnect.php';
 
     $username = $_POST['username'];
@@ -14,27 +13,21 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $stmt->bindParam(':username', $username);
     $stmt->execute();
 
-    // Check if query executed successfully
     if (!$stmt) {
         echo "<script>alert('Error executing query');</script>";
         exit();
     }
 
-    // Check if user exists
     if ($stmt->rowCount() > 0) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        // Verify password
         if (password_verify($password, $user['password'])) {
-            // Password correct, set session and redirect to home.php
             $_SESSION["name"] = $username;
             header("Location: home.php");
             exit();
         } else {
-            // Incorrect password
             echo "<script>alert('Username or password is incorrect');</script>";
         }
     } else {
-        // User not found
         echo "<script>alert('Username or password is incorrect');</script>";
     }
 }
@@ -71,7 +64,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         border-radius: 10px;
         background-color: rgba(255, 255, 255, 0.9);
-        /* Slightly transparent white */
     }
 
     .split-screen .left,
