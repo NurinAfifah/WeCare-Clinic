@@ -8,27 +8,39 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    // Prepare SQL statement
     $sqllogin = "SELECT * FROM `users` WHERE `name` = :username";
     $stmt = $conn->prepare($sqllogin);
     $stmt->bindParam(':username', $username);
     $stmt->execute();
 
+    // Check if query executed successfully
+    if (!$stmt) {
+        echo "<script>alert('Error executing query');</script>";
+        exit();
+    }
+
+    // Check if user exists
     if ($stmt->rowCount() > 0) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Verify password
         if (password_verify($password, $user['password'])) {
+            // Password correct, set session and redirect to home.php
             $_SESSION["name"] = $username;
-            echo "<script>alert('Login Success');</script>";
-            echo "<script>window.location.href = 'index.php';</script>";
+            header("Location: home.php");
+            exit();
         } else {
-            echo "<script>alert('Login Failed: Incorrect password');</script>";
-            echo "<script>window.location.href = 'login.php';</script>";
+            // Incorrect password
+            echo "<script>alert('Username or password is incorrect');</script>";
         }
     } else {
-        echo "<script>alert('Login Failed: User not found');</script>";
-        echo "<script>window.location.href = 'login.php';</script>";
+        // User not found
+        echo "<script>alert('Username or password is incorrect');</script>";
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -101,7 +113,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     .form-container input[type="text"],
     .form-container input[type="password"] {
         width: 100%;
-        padding: 12px;
+        padding: 8px;
         margin-bottom: 15px;
         border: 1px solid #ccc;
         border-radius: 5px;
@@ -117,8 +129,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     .password-container .field-icon {
         position: absolute;
         top: 40%;
-        right: 10px;
-        transform: translateY(-50%);
+        right: 6px;
+        transform: translateY(-70%);
         cursor: pointer;
     }
 
@@ -153,6 +165,26 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
     .register-link:hover {
         color: #0056b3;
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px 0;
+        text-align: center;
+        box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .footer .text-muted {
+        color: #6c757d;
     }
 
     @media (max-width: 768px) {
@@ -201,6 +233,11 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
             </div>
         </div>
     </div>
+    <footer class="footer">
+        <div class="container">
+            <span class="text-muted">© 2024 WeCare Clinic. All rights reserved.</span>
+        </div>
+    </footer>
     <script>
     document.getElementById("togglePassword").addEventListener("click", function() {
         var passwordField = document.querySelector('input[name="password"]');
