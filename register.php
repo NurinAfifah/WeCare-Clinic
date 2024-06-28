@@ -6,7 +6,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         isset($_POST['name']) && isset($_POST['password']) && isset($_POST['email']) &&
         isset($_POST['password1']) && isset($_POST['phone']) && isset($_POST['address'])
     ) {
-        // Include the database connection file
         require_once 'dbconnect.php';
 
         $username = $_POST['name'];
@@ -29,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         try {
-            // Prepare SQL statement and bind parameters
             $stmt = $conn->prepare("INSERT INTO users (name, email, password, phoneno, address) VALUES (:username, :email, :password, :phoneno, :address)");
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':email', $email);
@@ -37,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':phoneno', $phoneno);
             $stmt->bindParam(':address', $address);
 
-            // Execute statement
             if ($stmt->execute()) {
                 echo "<script>alert('Registration successful');</script>";
                 echo "<script>window.location.href = 'login.php';</script>";
@@ -48,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
 
-        $conn = null; // Close connection
+        $conn = null; 
     } else {
         echo "<script>alert('Please fill in all required fields.');</script>";
     }
