@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $phoneno = $_POST['phone'];
         $address = $_POST['address'];
 
-        // Check if passwords match and are at least 8 characters long
         if ($password !== $password1) {
             echo "<script>alert('Passwords do not match.');</script>";
             echo "<script>window.location.href = 'register.php';</script>";
@@ -30,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         try {
+            // Prepare SQL statement and bind parameters
             $stmt = $conn->prepare("INSERT INTO users (name, email, password, phoneno, address) VALUES (:username, :email, :password, :phoneno, :address)");
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':email', $email);
@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bindParam(':phoneno', $phoneno);
             $stmt->bindParam(':address', $address);
 
+            // Execute statement
             if ($stmt->execute()) {
                 echo "<script>alert('Registration successful');</script>";
                 echo "<script>window.location.href = 'login.php';</script>";
@@ -47,12 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
         }
 
-        $conn = null;
+        $conn = null; // Close connection
     } else {
         echo "<script>alert('Please fill in all required fields.');</script>";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -100,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     .form-container input[type="tel"],
     .form-container textarea {
         width: 100%;
-        padding: 6px;
+        padding: 8px;
         margin-bottom: 15px;
         border: 1px solid #ccc;
         border-radius: 5px;
@@ -196,6 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <textarea name="address" rows="3" placeholder="Address" required></textarea>
             <button type="submit" class="login-btn">Register</button>
         </form>
+        <a href="login.php" class="register-link">Already registered? Login here.</a>
     </div>
 
     <footer class="footer">
